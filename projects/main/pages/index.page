@@ -1,0 +1,33 @@
+##### Pikalinkit
+ * [Peuramäki, kartoitus](peuramaki-kartoitus)
+ * [Palvelutuotteet](palvelutuotteet)
+ * [Konepaja](konepaja)
+ * [Ladonta](ladonta)
+ * [Muu valmistus](muu-valmistus)
+ * [Projektit](projektit)
+
+
+##### NoteWiki
+
+Näin lisätään lokaali kuva tähän wikiin:
+
+![Kuva](/notewiki/static/files/Laajalahti-2015-06-20_203.jpg)
+
+
+Elikkä jos haluat laitaa kuvia / dokkareita tähän wikiin, niin levyllä vaan sinne static/files kansioon tavaraa ja sit toi flaski servuaa ne tarvittaessa. Sinne voi luoda alikansioita jos haluaa (vois olla ihan fiksua vaikka laittaa kuvat omaansa, pdf:t johonkin toiseen jne.)
+
+Tää wiki käyttää [Googlen Materializea](http://materializecss.com/) leiskaan, [Markdownia](https://daringfireball.net/projects/markdown/basics) ([~~Markdown.js:llä~~ nope, marked:lla](https://github.com/markedjs/marked)) ja ilmoituksiin [Humane.js:ää](http://wavded.github.io/humane-js/). Flowchartteihin käytetään [Mermaidia](https://mermaid-js.github.io/mermaid). Bäkkärinä toimii mikä muukaan kuin [Flask](http://flask.pocoo.org/).
+
+Editointi tietenkin onnistuu kliksimällä tota oikean yläreunan kynää, se ampuu  esiin tohon sivuun editorin, jolla voi sitten käpistellä sisältöä live-editorin kanssa (so cool!). Se tietty hieman sotkee, että toi sit ampaisee sinne sivuun takas ku klikkaa **Hide editor** nappia ja tää pääview palaa takasin omaan leveyteensä. Sitä voi kyl vaihtaa, jos se alkaa häiritsemään tjsp.
+
+Wikin sisäiset linkit onnistuu ihan samalla lailla kuin external linkitkin, kas [näin](toinen-wikisivu).
+
+Nyt tää tukee myös koodin syntax highlightiä, demo siitä [toisella sivulla](kooditesti). Siihen käytin [Highlight.js:ää](https://highlightjs.org).
+
+Ja tietenkin [MathJax](https://www.mathjax.org/)-tuki löytyy, joten kaavat onnistuu tutulla ja turvallisella tavalla: $$\LaTeX$$
+
+Niin ja se demo niistä kaavioista löytyy [täältä](mermaid-test).
+
+Ja nyt myös sivujen includettaminen toisiinsa onnistuu, [demo](include-test).
+
+Jos koneeltä löytyy Gnuplot niin tää härpäke osaa käyttää sitä piirtämään käppyröitä, [demo](plot-test).

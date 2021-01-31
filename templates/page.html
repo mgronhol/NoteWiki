@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head
+	
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+
+	<link href="/notewiki/static/css/material-icons.css" rel="stylesheet">
+	<link href="/notewiki/static/css/materialize.min.css" type="text/css" rel="stylesheet" />
+	
+	<link href="/notewiki/static/css/humane-original.css" type="text/css" rel="stylesheet" />
+
+	<!-- <link href="/static/css/highlight/solarized-light.css" type="text/css" rel="stylesheet" /> -->
+	<link href="/notewiki/static/css/highlight/hybrid.css" type="text/css" rel="stylesheet" />
+
+	<link href="/notewiki/static/css/style.css" type="text/css" rel="stylesheet" />
+	 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+	
+	<title>##TITLE##</title>
+	  
+</head>
+<body>
+<div class="container">
+<div class="row">
+	<div class="col s3"><a href="index">index</a><h5>##TITLE##</h5></div>
+</div>
+	<div class="row">
+		<div id="view" class="col s11">
+##CONTENT##
+		</div>
+	
+
+
+	<div class="edit col s1" id="edit">
+		<a class="waves-effect waves-light btn-flat" id="show-editor"><i class="material-icons left">create</i><span id="show-editor-text">Show editor</span></a>	
+	<textarea id="text-input" oninput="this.editor.update()" rows="10" class="materialize-textarea">##CONTENT##</textarea>	
+<a class="waves-effect waves-light btn" id="save-button"><i class="material-icons left">save</i>Save</a>	
+</div>
+</div>
+
+
+</div>
+
+<script type="text/javascript" src="/notewiki/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/notewiki/static/js/materialize.min.js"></script>
+<!-- <script type="text/javascript" src="/notewiki/static/js/markdown.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script type="text/javascript" src="/notewiki/static/js/humane.min.js"></script>
+<script type="text/javascript" src="/notewiki/static/js/highlight.pack.js"></script>
+<script type="text/javascript" src="/notewiki/static/js/mermaid.min.js"></script>
+
+<!-- Tän voi ottaa pois jos ei halua matikkamodea -->
+<!-- <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script> -->
+<!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> -->
+
+<!-- <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
+<script type="text/javascript" src="/notewiki/static/js/mathjax-tex-mml-chtml.js"></script>
+
+
+<script>
+
+mermaid.initialize({startOnLoad:false});
+var listify = function( content ){ var out = []; for( var i = 0; i < content.length; i+= 1 ){ out.push( content[i] ); } return out; };
+
+
+// laita falseks, jos ei käyttää
+var USE_MATHJAX = true;
+
+var current_page = "##TITLE##";
+var current_project = "##PROJECT##";
+
+var getElement = function (id) { return document.getElementById(id); };
+
+var last_type = (new Date()).getTime();
+
+var include_replacements = {};
+
+function code_block_translator( content ){
+	
+	var lines = content.split("\n");
+	
+	var out = "";
+	
+	var code = false;
+	
+	for( var i = 0 ; i < lines.length ; i += 1 ){
+		if( code ){
+			if( lines[i].trim().indexOf( "::end" ) == 0 ){ code = false; }
+			else { out += "\t" + lines[i] + "\n";  }
+			} else {
+				if( lines[i].trim().indexOf( "::begin" ) == 0 ){ 
+					 code = true;
+					} else { out += lines[i] + "\n"; }
+				}
+		} 
+	
+	return out;
+	}
+
+function mermaid_block_translator( content ){
+	
+	var lines = content.split("\n");
+	
+	var out = "";
+	var mermaid_block = "";
+
+	var code = false;
+	
+	for( var i = 0 ; i < lines.length ; i += 1 ){
+		if( code ){
+			
+			if( lines[i].trim().indexOf( "::end" ) == 0 ){ 
+				code = false; 
+				out += '\n\n<div class="mermaid">\n' + mermaid_block + '\n</div>\n\n';
+				}
+			
+			else { 
+				//out += "\t" + lines[i] + "\n";  
+				mermaid_block += lines[i] + "\r\n";
+				}
+			} else {
+				if( lines[i].trim().indexOf( "::mermaid" ) == 0 ){ 
+					 code = true;
+					 mermaid_block = "";
+					} else { out += lines[i] + "\n"; }
+				}
+		} 
+	
+	return out;
+	}
+
+function plot_block_translator( content ){
+	
+	var lines = content.split("\n");
+	
+	var out = "";
+	var plot_cnt = 0;
+
+	var code = false;
+	
+	for( var i = 0 ; i < lines.length ; i += 1 ){
+		if( code ){
+			
+			if( lines[i].trim().indexOf( "::end" ) == 0 ){ 
+				code = false;
+				out += "![" + "plot-" + plot_cnt + "]" + "(" + "/notewiki/" + current_project + "/" + current_page + "/plot/" + plot_cnt + ")" + "\n";
+				plot_cnt += 1; 
+				}
+			
+			} else {
+				if( lines[i].trim().indexOf( "::plot" ) == 0 ){ 
+					code = true;
+					} else { out += lines[i] + "\n"; }
+				}
+		} 
+	
+	return out;
+	}
+
+
+
+
+function include_translator( content ){
+	
+	var lines = content.split("\n");
+	
+	var out = "";
+	for( var i = 0 ; i < lines.length ; i += 1 ){
+		if( lines[i].trim().indexOf( "@include" ) == 0 ){ 
+			var parts = lines[i].trim().split(" ");
+			var key = parts[1];
+			if( key in include_replacements ){
+				out += include_replacements[ key ];
+			}
+			else {
+				(function(key){
+				$.get("/notewiki/" + current_project + "/" + key, {raw: 1}, function( response ){
+					//console.log( response );
+					include_replacements[ key ] = response;
+					editor.update();
+				} );
+				})(key);
+			}
+		}
+		else {
+			out += lines[i] + "\n";
+			}
+		}
+
+	
+	return out;
+	}
+
+
+function handle_mermaid(){
+    listify( document.getElementsByClassName( "mermaid" ) ).forEach( function( element, index ){
+
+		var output = document.createElement("div");
+		element.insertAdjacentElement('afterend', output);
+
+		var insertSvg = function( svgCode, bindFunctions ){ output.innerHTML = svgCode; };
+
+		var content = element.textContent;
+		element.id = "mermaid-" + index;
+		mermaid.mermaidAPI.render(element.id, content, insertSvg);
+
+		});
+	}
+
+
+
+
+function update_rendering(){
+	var current = (new Date()).getTime();
+	
+	if( (current - last_type) > 500 ) {
+		if( USE_MATHJAX ){
+			//MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+			MathJax.typesetClear();
+			MathJax.typeset();
+			}
+
+		// syntax highlighting
+		
+		$('pre code').each(function(i, block){ 
+			hljs.highlightBlock(block);
+			});
+
+
+		}
+	
+	}
+
+function Editor(input, view){
+
+		this.update = function() {
+				last_type = (new Date()).getTime();
+				setTimeout( update_rendering, 750 );
+				
+				var content = input.value;
+				
+				content = code_block_translator( content );
+				content = mermaid_block_translator( content );
+				content = include_translator( content );
+				content = plot_block_translator( content );
+				
+				console.log(content)
+			
+				//view.innerHTML = markdown.toHTML(content, 'Maruku') + "&nbsp;";
+				view.innerHTML = marked(content) + "&nbsp;";
+				
+
+				$(view).children("ul").each( function(index, elem){
+					$(elem).addClass("collection");
+					$(elem).children().each( function(index, elem){
+						$(elem).addClass("collection-item");
+						});
+					});
+				
+				//handle_mermaid();
+				setTimeout( handle_mermaid, 100 );
+				
+				
+				
+		};
+
+		input.editor = this;
+		this.update();
+	}
+		
+
+var editor = new Editor( getElement("text-input"), getElement("view") );
+
+$("#text-input").hide();
+$("#save-button").hide();
+
+var editor_shown = false;
+
+$("#show-editor").click(function(){
+	$("#text-input").toggle();
+	$("#save-button").toggle();
+	editor_shown = !editor_shown;
+	
+	if( editor_shown ){
+		$("#show-editor-text").text("Hide editor");
+		
+		$("#view").removeClass("s11").addClass("s8");
+		$("#edit").removeClass("s1").addClass("s4");
+		
+		
+		}
+	else {
+		$("#show-editor-text").text("Show editor");
+		
+		$("#view").removeClass("s8").addClass("s11");
+		$("#edit").removeClass("s4").addClass("s1");
+		
+		
+		}
+	
+	});
+
+$("#save-button").click(function(){
+	var content = $("#text-input").val();
+	$.post("/notewiki/" + current_project + "/" + current_page, {content: content}, function( response ){
+		humane.log("Saved.", {timeout: 2000} );
+		} );
+	});
+
+</script>
+
+
+</body>
+</html>

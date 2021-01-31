@@ -1,0 +1,13 @@
+##### Plot test
+
+
+::plot
+unset key
+set xlabel "Hirvi"
+set ylabel "µursu"
+plot "-" using 1:2 w lp
+1 2 
+2 3
+4 5
+e
+::end

@@ -1,0 +1,40 @@
+Elikkä tähän testiä koodia varten:
+
+
+    def mauri( antero ):
+         return antero + 2
+    
+    class Peuroja(object):
+        def __init__(self):
+              self.eino = 3
+
+
+Yllä oleva koodijuttu on tehty käyttäen markdownin omaa code-merkintää, eli joka koodirivin alussa on 4 spacea tai 1 tabi.
+
+Jos sitä ei halua käyttää niin tein tähän oman markkerisysteemin koodille, se on niinkin vaikea kuin ::begin ja ::end, ne pitää olla omilla riveillä niin tuo parsii sitten sieltä välistä kaiken koodiksi.
+
+Eli näin:
+
+::begin
+
+def render_page( fn, title ):
+	template = ""
+	with open( "templates/page.html", 'rb' ) as handle:
+		template = handle.read()
+	
+	content = ""
+	with open( fn, 'rb' ) as handle:
+		content = handle.read().strip()
+	
+	template = template.decode("utf-8")
+	
+	html = template.replace( "##TITLE##", title )
+	html = html.replace( "##CONTENT##", content.decode("utf-8") )
+	return html
+
+@app.route("/")
+def index():
+	return redirect("/pages/index")
+	
+
+::end

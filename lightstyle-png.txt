@@ -1,0 +1,24 @@
+set term pngcairo enhanced font "Arial" background rgb "white"
+set linetype 1 lw 3 lc rgb "#ee2148" pointtype 6
+set linetype 2 lw 3 lc rgb "#21b2ee" pointtype 6
+set linetype 3 lw 3 lc rgb "#c3f323" pointtype 6
+set linetype 4 lw 1 lc rgb "white" pointtype 1
+set linetype 5 lw 1 lc rgb "black" pointtype 1
+
+set xlabel tc rgb "black" font ",12"
+set ylabel tc rgb "black" font ",12"
+set title tc rgb "black" font ",12"
+
+set border 4095 lt 5
+
+set key fixed right top vertical Right noreverse enhanced autotitle box lt 5 lc rgb "black" linewidth 1 dashtype solid tc lt 5 width 1 spacing 1.5
+
+set grid
+set grid lw 2 lc rgb "#999999" dashtype 2
+set style fill transparent solid 0.2
+
+set style arrow 1 head back filled linecolor rgb "#ee2148"  linewidth 2 dashtype solid size screen  0.025,30.000,45.000
+set style arrow 2 head back filled linecolor rgb "#21b2ee"  linewidth 2 dashtype solid size screen  0.025,30.000,45.000
+set style arrow 3 head back filled linecolor rgb "#c3f323"  linewidth 2 dashtype solid size screen  0.025,30.000,45.000
+set style arrow 4 head back filled linecolor rgb "white"  linewidth 1 dashtype solid size screen  0.025,30.000,45.000
+set style arrow 4 head back filled linecolor rgb "black"  linewidth 1 dashtype solid size screen  0.025,30.000,45.000
