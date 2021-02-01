@@ -58,6 +58,10 @@
 <script type="text/javascript" src="/notewiki/static/js/mathjax-tex-mml-chtml.js"></script>
 
 
+<script type="text/javascript" src="/notewiki/static/js/wavedrom-default.js"></script>
+<script type="text/javascript" src="/notewiki/static/js/wavedrom.min.js"></script>
+
+
 <script>
 
 mermaid.initialize({startOnLoad:false});
@@ -227,7 +231,10 @@ function update_rendering(){
 			hljs.highlightBlock(block);
 			});
 
+		// WaveDrom timing charts
 
+		WaveDrom.ProcessAll()
+	
 		}
 	
 	}
