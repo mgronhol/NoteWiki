@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 
 #from __future__ import print_function
-from flask import Flask, request, redirect, Response
+from flask import Flask, request, redirect, Response, abort, send_from_directory
 import os
 import sys
-
+import json
 import libGnuplotIO
-
-#gplot = libGnuplotIO.Gnuplot()
-#gplot.set_inmemory_output()
 
 gplot = None
 
-#print( sys.version )
+CONFIG = {}
+with open( "config.json", 'r' ) as handle:
+	CONFIG = json.load( handle )
+
 
 def extract_blocks( key, content ):
 	lines = content.splitlines()
@@ -39,10 +39,8 @@ def extract_blocks( key, content ):
 
 
 app = Flask(__name__,static_url_path="/notewiki/static")
-#app = Flask(__name__,static_url_path="/static")
 
 def render_page( fn, title, project ):
-	print( "Rendering:", fn )
 	template = ""
 	with open( "templates/page.html", 'rb' ) as handle:
 		template = handle.read()
@@ -75,10 +73,16 @@ def index():
 	
 @app.route("/notewiki/<project>/<page>", methods = ["GET"])
 def show_page( project, page ):
-	fn = os.path.join( "pages", page + ".page" )
-	fn = os.path.join( project, fn )
-	fn = os.path.join( "projects", fn )
 	
+	if project not in CONFIG["projects"]:
+		abort( 404, description = "Project not found." )
+	
+	fn = os.path.join( "pages", page + ".page" )
+	fn = os.path.join( CONFIG["projects"][project], fn )
+	print( "fn", fn)
+
+
+
 	new_page_fn = os.path.join( "pages", "_new" + ".page" )
 	if os.path.exists( fn ):
 		if "raw" in request.args:
@@ -100,10 +104,12 @@ def plot_graph( project, page, plot_id ):
 		gplot.set_inmemory_output()
 
 
-	fn = os.path.join( "pages", page + ".page" )
-	fn = os.path.join( project, fn )
-	fn = os.path.join( "projects", fn )
+	if project not in CONFIG["projects"]:
+		abort( 404, description = "Project not found." )
 	
+	fn = os.path.join( "pages", page + ".page" )
+	fn = os.path.join( CONFIG["projects"][project], fn )
+
 	content = raw_page( fn, page, project )
 	content = str( content, "utf-8" )
 	plots = extract_blocks("plot", content)
@@ -125,9 +131,12 @@ def plot_graph( project, page, plot_id ):
 
 @app.route("/notewiki/<project>/<page>", methods= ["POST"])
 def save_page( project, page ):
+	
+	if project not in CONFIG["projects"]:
+		abort( 404, description = "Project not found." )
+	
 	fn = os.path.join( "pages", page + ".page" )
-	fn = os.path.join( project, fn )
-	fn = os.path.join( "projects", fn )
+	fn = os.path.join( CONFIG["projects"][project], fn )
 	
 	
 	content = request.form["content"].encode("utf-8")
@@ -137,6 +146,19 @@ def save_page( project, page ):
 	
 	
 	return render_page( fn, page, project )
+
+
+@app.route("/notewiki/<project>/static/<path:path>", methods = ["GET"])
+def server_per_project_static( project, path ):
+	
+	if project not in CONFIG["projects"]:
+		abort( 404, description = "Project not found." )
+	
+	dirfn = os.path.join( CONFIG["projects"][project], "static" )
+
+	return send_from_directory( dirfn, path )
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

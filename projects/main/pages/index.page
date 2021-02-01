@@ -1,9 +1,8 @@
-
 ##### NoteWiki
 
 Näin lisätään lokaali kuva tähän wikiin:
 
-![Kuva](/notewiki/static/files/Laajalahti-2015-06-20_203.jpg)
+![Kuva](static/Laajalahti-2015-06-20_203.jpg)
 
 
 Elikkä jos haluat laitaa kuvia / dokkareita tähän wikiin, niin levyllä vaan sinne static/files kansioon tavaraa ja sit toi flaski servuaa ne tarvittaessa. Sinne voi luoda alikansioita jos haluaa (vois olla ihan fiksua vaikka laittaa kuvat omaansa, pdf:t johonkin toiseen jne.)
