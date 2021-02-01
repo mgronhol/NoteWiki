@@ -1,7 +1,6 @@
 ##### Ajoituskaavio
 
-
-<script type="WaveDrom">
+::wavedrom
 { signal: [
   { name: "pclk", wave: 'p.......' },
   { name: "Pclk", wave: 'P.......' },
@@ -14,15 +13,15 @@
   { name: 'clk3', wave: 'nhNhplPl' },
   { name: 'clk4', wave: 'xlh.L.Hx' },
 ]}
-</script>
+::end
+
 
 ##### ja toinen
 
-<script type="WaveDrom">
+::wavedrom
 { signal : [
   { name: "clk",  wave: "p......" },
   { name: "bus",  wave: "x.34.5x",   data: "head body tail" },
   { name: "wire", wave: "0.1..0." },
 ]}
-</script>
-
+::end

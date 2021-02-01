@@ -134,6 +134,38 @@ function mermaid_block_translator( content ){
 	return out;
 	}
 
+	function wavedrom_block_translator( content ){
+	
+	var lines = content.split("\n");
+	
+	var out = "";
+	var wavedrom_block = "";
+
+	var code = false;
+	
+	for( var i = 0 ; i < lines.length ; i += 1 ){
+		if( code ){
+			
+			if( lines[i].trim().indexOf( "::end" ) == 0 ){ 
+				code = false; 
+				out += '\n\n<script type="WaveDrom">\n' + wavedrom_block + "<" + "/" + "script>";
+				}
+			
+			else { 
+				//out += "\t" + lines[i] + "\n";  
+				wavedrom_block += lines[i] + "\r\n";
+				}
+			} else {
+				if( lines[i].trim().indexOf( "::wavedrom" ) == 0 ){ 
+					 code = true;
+					 wavedrom_block = "";
+					} else { out += lines[i] + "\n"; }
+				}
+		} 
+	
+	return out;
+	}
+
 function plot_block_translator( content ){
 	
 	var lines = content.split("\n");
@@ -251,6 +283,7 @@ function Editor(input, view){
 				content = mermaid_block_translator( content );
 				content = include_translator( content );
 				content = plot_block_translator( content );
+				content = wavedrom_block_translator( content );
 				
 				console.log(content)
 			
